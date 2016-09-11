@@ -1,0 +1,116 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{calc}
+
+\title{INSA de Rennes -- introduction à la BioInformatique}
+\author{ }
+\date{Automne 2016}
+
+\begin{document}
+
+\maketitle
+
+\section*{Séance 1}
+\subsection*{TD 1 : introduction au format des données de séquençage}
+
+%\noindent\fbox{\parbox{\linewidth-2\fboxrule-2\fboxsep}{Résumé : pour un individu (homme, souris...), on peut récupérer de l'ADN en prélevant des cellules et passer ce matériel à un séquenceur qui en sortie fournit un certain nombre de séquences ADN bien plus courtes que le génome seul.}}
+\textit{\textbf{Ces travaux dirigés sont évalués par des rapports à rendre à la fin de chaque séance. Cet fiche de TD sert d'énoncé. Dans les encadrés figurent un certain nombre de questions. Rédigez leurs réponses dans votre rapport, sachant que de nombreux éléments de réponse seront donnés à l'oral pendant la séance. Ce cours a vocation à vous présenter une approche plutôt axée recherche de la bioinformatique.
+Comme dans tout travail scientifique, la présentation et la clarté des résultats seront pris en compte.}}\\
+
+Pour un individu (Homme, souris...), on peut récupérer de l'ADN en prélevant des cellules et passer ce matériel à une machine appelée séquenceur, qui en sortie fournit un certain nombre de séquences ADN bien plus courtes que le génome seul, sous forme de texte. Pour explorer le contenu de ces séquences, il existe de nombreuses approches et de nombreux algorithmes. Une méthode simple et à la base de nombreux outils est de considérer une séquence comme un mot de taille $N$, et d'étudier ses sous mots de taille $k$.\\
+
+\noindent\fbox{\parbox{\linewidth-2\fboxrule-2\fboxsep}{\textit{Question : expliquer le format fasta\\
+Qu'est-ce qu'un read ?}}}\\
+
+
+Avec des commandes du shell répondre aux questions suivantes :\\
+\noindent\fbox{\parbox{\linewidth-2\fboxrule-2\fboxsep}{\textit{ Combien y a t-il de séquences dans le fichier ?  Quelle est leur taille ?\\
+D'après le cours, cette taille et cette quantité de séquences correspondent-elles à une vraie expérience de séquençage ?}}}\\
+
+Ecrire des scripts Python pour répondre aux questions suivantes. Générer tous les mots de taille $k$ d'une séquence du jeu. Essayer différents $k$ : 5, 11, 25, 31. Associer à un mot de taille $k$ son occurence dans le jeu de données avec un dictionnaire (\texttt{dict()}).\\
+\noindent\fbox{\parbox{\linewidth-2\fboxrule-2\fboxsep}{\textit{Question : qu'est-ce qu'un $k$-mer ?\\
+Peut-on identifier des répétitions ? Jusqu'à quel nombre d'occurrences ? D'après ce que vous savez sur une expérience de séquençage, pourquoi de nombreux mots de taille $k$ sont présents plus d'une fois ?}}}\\
+
+Pour chaque séquence, vérifier si elle contient un mot d'occurrence $< 2$ en utilisant le dictionnaire.\\
+\noindent\fbox{\parbox{\linewidth-2\fboxrule-2\fboxsep}{\textit{Question : quelles peuvent être les raisons qui font que certaines séquences contiennent des mots présents une seule fois ?}}}\\
+
+\noindent\fbox{\parbox{\linewidth-2\fboxrule-2\fboxsep}{\textit{Question bonus : comment estimer la taille du génome d'origine à partir des mots de taille $k$ présents dans le jeu de donnée ?}}}\\
+
+
+  %  \item utiliser la séquence $s$ venant d'un autre jeu de donnée. Combien de mot de taille $k$ de cette séquence étaient présent dans le jeu de données que vous avez indexé dans le dictionnaire ?
+
+
+
+%\textit{messages : } un pan de la biologie se présente concrètement sous la forme de données qu'on peut étudier sur un ordi. Un jeu de données se trouve sous la forme d'une collection de séquences dont on ne connait pas l'agencement à priori et qui sont des fractions du génome originel. On a besoin d'algo du texte, et les structures de données sont un point essentiel.
+
+\subsection*{TD 2 : corriger des données de séquençage}
+La correction des données est un enjeu crucial en bioinformatique. Les séquences ne sortent en effet pas exemptes d'erreur du séquenceur. Les taux, les types et les distributions d`erreurs sont plus ou moins bien connues selon la technologie utilisée.
+
+%donner le type d'erreurs que l'on va étudier
+%donner des ordres de gdeur de taux d'erreur
+\noindent\fbox{\parbox{\linewidth-2\fboxrule-2\fboxsep}{\textit{Question : quel type d'erreur étudions-nous dans ce TP ? Quelle(s) hypothèse(s) faisons-nous ?}}}\\
+
+
+\textit{\textbf{Ce TD est réalisé en C++. Un squelette de code et quelques fonctions sur lequelles vous appuyer vous est fourni, commencez par bien lire le contenu des fichiers.}}\\
+Préliminaires :
+\begin{itemize}
+  \item Essayer de compiler le projet.
+  \item Regarder le fichier \texttt{main.cpp}. Pour son fonctionnement normal, le programme prend en entrée un fichier de read, la taille de $k$ et un nom de fichier de sortie où les reads non erronés seront utilisés.\\
+  \item Regarder le fichier  \texttt{test.fasta}. Il contient trois petits reads, le troisième contient une erreur à la base 5 ("A" à la place de "T").
+  \item Lancer l'exécutable sur le fichier \texttt{test.fasta} en donnant une ligne de commande valide.
+\end{itemize}
+
+\subsubsection*{Partie 1 : sélection des reads non erronés avec table de hash}
+Dans cette première partie du TP, on va traiter un problème plus simple que la correction de read : la sélection des reads non erronés. On va dans un premier temps utiliser des tables de hash avant de s'intéresser à une structure de données plus adaptée pour cette situation. \textbf{Une fois cette partie terminée, en passant le fichier \texttt{test.fasta} à notre exécutable, on devrait n'avoir dans le fichier de sortie que les deux reads sans erreur.}\\
+
+\noindent\fbox{\parbox{\linewidth-2\fboxrule-2\fboxsep}{\textit{ Comment peut-on se débarrasser de séquences erronées en se basant sur l'occurrence des mots de taille $k$ ?}}}\\
+
+Les fonctions à compléter se trouvent dans le fichier \texttt{td2\_etudiants.cpp}. La fonction principale d'où appeler toutes les fonctions à compléter est \texttt{runCorrectorHashTable}.
+\begin{itemize} 
+ \item Le programme lit les reads et les stocke dans un vecteur de strings. Compléter la fonction \texttt{pushKmerInMap} qui prend en entrée ce vecteur et une table de hash qui stocke chaque $k$-mer et son occurence.
+ \item Compléter la fonction \texttt{selectSolidKmers} qui prend en entrée une table de hash et un set, pour stocker les $k$-mers solides (ceux d'occurrence $\geq$ 2) dans le set.
+ \item Compléter la fonction \texttt{removeSpuriousReads} qui lit le vecteur de strings qui contient les reads, vérifie que tous les $k$-mers d'un read sont solides, et l'écrit dans un vecteur seulement dans ce cas.
+ \item Combiner les fonctions précédentes ainsi que la fonction \texttt{writeCleanReads} dans \texttt{runCorrectorHashTable} puis faire un test avec  \texttt{test.fasta} et $k=5$.
+\end{itemize}
+
+\noindent\fbox{\parbox{\linewidth-2\fboxrule-2\fboxsep}{\textit{Question : résumez votre workflow, le résultat attendu et votre résultat.\\
+Avec ce workflow, on a supposément retiré des séquences erronées. Peut-il en rester, et pourquoi ?\\
+Est-il possible au contraire que l'on ait retiré de "bonnes" séquences par erreur ?}}}
+
+\subsubsection*{Partie 2 : sélection des reads non erronés avec filtre de Bloom}
+On s'intéresse toujours à la sélection de reads, mais cette fois on va construire et utiliser un filtre de Bloom à la place de la table de hash précédemment utilisée.\\
+
+\noindent\fbox{\parbox{\linewidth-2\fboxrule-2\fboxsep}{\textit{Question : expliquer le principe du filtre de Bloom.\\
+Qu'est-ce que sont les faux positifs du filtre ?}}}\\
+
+Les fonctions à compléter se trouvent dans le fichier \texttt{td2\_etudiants.cpp}. La fonction principale d'où appeler toutes les fonctions à compléter est \texttt{runCorrectorBloomFilter}.
+\begin{itemize}
+  \item Compléter la fonction \texttt{checkKmerInBloomFilter}. Elle prend un entrée un $k$-mer et vérifie qu'il se trouve dans un filtre de Bloom. S'aider des fonctions dans \texttt{utils\_etudiants.cpp}.\\
+  \noindent\fbox{\parbox{\linewidth-2\fboxrule-2\fboxsep}{\textit{Question : pourquoi passe-t-on la taille du filtre $sizeBF$ dans cette fonction ?}}}
+  \item Compléter la fonction \texttt{pushKmerInBloomFilter}. Elle boucle sur tous les reads pour ajouter chaque $k$-mer solide au filtre de Bloom.\\
+ \noindent\fbox{\parbox{\linewidth-2\fboxrule-2\fboxsep}{\textit{Question : à quoi sert le filtre intermédiaire \texttt{BloomFilterSolid} ?}}}
+  \item Compléter la fonction \texttt{removeSpuriousReadsBloomFilter} qui fait le même travail que dans la partie précédente.
+  \item Changer le main pour lancer la fonction \texttt{runCorrectorBloomFilter} et tester avec  \texttt{test.fasta} et $k=5$. On va utiliser 12 fonctions de hash (\texttt{nbHashFunctions}). Compter le nombre de $k$-mers et choisir une taille pour les filtres de Bloom de manière à avoir 12 bits par élément.\\
+  \noindent\fbox{\parbox{\linewidth-2\fboxrule-2\fboxsep}{\textit{Question : quelle taille de filtre avez-vous choisie ?}}}
+  % filtres de Bloom de taille 470. -en théorie un bool codé sur un 1b, en pratique un bool est sur 1 Byte, mais les vecteur de bool en C++ sur sur un 1b par élément
+ \end{itemize}
+ 
+ \subsubsection*{Partie 3 : tests}
+ \begin{itemize}
+  \item Générer des reads depuis une référence : utiliser le génome du virus \texttt{lambda\_virus.fa} et la commande \texttt{./readCorrection lambda\_virus.fa}. On obtient deux fichiers de sortie : \texttt{lambdavirus\_10X\_err.fasta} et \texttt{perfect\_reads.fa}. \texttt{perfect\_reads.fa} contient des reads parfaits (sans erreurs) simulés d'après le génome, \texttt{lambdavirus\_10X\_err.fasta} contient les mêmes reads mais avec 0.2\% d'erreurs. On va s'intéresser à ce dernier fichier.\\
+   \noindent\fbox{\parbox{\linewidth-2\fboxrule-2\fboxsep}{\textit{Question : combien y a-t-il de reads ? Quelle est leur taille ?}}}
+   \item Tester les approches de la partie 1 et de la partie 2 sur ce fichier en terme de temps et de mémoire grâce à \texttt{/usr/bin/time}. Utiliser $k=21$, 12 fonctions de hash (\texttt{nbHashFunctions}), une taille de 5000000 pour \texttt{bloomFilterSolid} (\texttt{sizeBF}) et de 860000 pour \texttt{bloomFilterCheck} (\texttt{sizeBF2}).\\
+    \noindent\fbox{\parbox{\linewidth-2\fboxrule-2\fboxsep}{\textit{Question : pourquoi un filtre est-il plus petit que l'autre ?\\
+     En pratique, comment estime-t-on le nombre de $k$-mers et donc la taille des filtres ?}}}\\
+     \noindent\fbox{\parbox{\linewidth-2\fboxrule-2\fboxsep}{\textit{Question : quelle approche est la plus rapide ?\\
+     Quelle approche a la plus faible empreinte mémoire (donner les écarts en ordre de grandeur) ?\\
+     Résumer les avantages/inconvénients d'un filtre de Bloom par rapport à une table de hash.}}}
+      \noindent\fbox{\parbox{\linewidth-2\fboxrule-2\fboxsep}{\textit{Question : combien de reads erronés avez-vous retiré ? En particulier, expliquer pourquoi les résultats avec table de hash et avec Bloom Filter sont un peu différents.\\ %747662/2 reads présents avec hash  
+                                                                                                   %747682/2 avec bloom : on en a gardé plus
+     Expliquer votre résultat en comparant à l'attendu.}}}
+     %hash 13.35 s 132256 ram
+     %bf 14.90 s dans user 63636 k ram dans maxresident
+ \end{itemize}
+
+ 
+\end{document}
